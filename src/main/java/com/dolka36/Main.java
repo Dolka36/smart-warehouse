@@ -7,6 +7,8 @@ import com.dolka36.repository.InMemoryOrderRepository;
 import com.dolka36.repository.InMemoryProductRepository;
 import com.dolka36.repository.InMemoryRobotRepository;
 import com.dolka36.service.WarehouseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.Scanner;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
         InMemoryOrderRepository orderRepository = new InMemoryOrderRepository();
         InMemoryProductRepository productRepository = new InMemoryProductRepository();
@@ -25,7 +28,7 @@ public class Main {
         // Добавляем тестовых роботов при старте
         robotRepository.add(new Robot("ROB-001", "Робот-погрузчик Альфа"));
         robotRepository.add(new Robot("ROB-002", "Робот-погрузчик Бета"));
-        System.out.println("Система склада запущена. Роботы готовы к работе.");
+        log.info("Система склада запущена. Роботы готовы к работе.");
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -47,7 +50,7 @@ public class Main {
                 case 1:
                     List<Product> products = warehouseService.getAllProducts();
                     if (products.isEmpty()) {
-                        System.out.println("Склад пуст");
+                        log.info("Склад пуст");
                     } else {
                         System.out.println("Товары на складе:");
                         for (Product p : products) {
@@ -93,7 +96,7 @@ public class Main {
                 case 6:
                     List<Order> orders = warehouseService.getAllOrders();
                     if (orders.isEmpty()) {
-                        System.out.println("Заказов нет");
+                        log.info("Заказов нет");
                     } else {
                         System.out.println("Все заказы:");
                         for (Order o : orders) {
@@ -104,7 +107,7 @@ public class Main {
                 case 7:
                     List<Robot> robots = warehouseService.getAllRobots();
                     if (robots.isEmpty()) {
-                        System.out.println("Роботов нет");
+                        log.info("Роботов нет");
                     } else {
                         System.out.println("Все роботы:");
                         for (Robot r : robots) {
@@ -113,11 +116,11 @@ public class Main {
                     }
                     break;
                 case 0:
-                    System.out.println("Выход из программы. До свидания!");
+                    log.info("Выход из программы. До свидания!");
                     scanner.close();
                     return;
                 default:
-                    System.out.println("Неверный выбор. Попробуйте снова.");
+                    log.warn("Неверный выбор: {}", choice);
             }
         }
     }

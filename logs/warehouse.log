@@ -1,0 +1,4 @@
+2026-08-03 18:48:33.139 [main] INFO  c.dolka36.service.WarehouseService - Товар а добавлен на склад
+2026-08-03 18:48:36.568 [main] WARN  c.dolka36.service.WarehouseService - Нет новых заказов
+2026-08-03 18:48:40.316 [main] WARN  c.dolka36.service.WarehouseService - Заказ с id 1 не найден
+2026-08-03 18:52:09.378 [main] INFO  com.dolka36.Main - Система склада запущена. Роботы готовы к работе.

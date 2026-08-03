@@ -7,11 +7,14 @@ import com.dolka36.model.Robot;
 import com.dolka36.repository.OrderRepository;
 import com.dolka36.repository.ProductRepository;
 import com.dolka36.repository.RobotRepository;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
 
 public class WarehouseService {
+    private static final Logger log = LoggerFactory.getLogger(WarehouseService.class);
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final RobotRepository robotRepository;
@@ -24,10 +27,10 @@ public class WarehouseService {
 
     public void addProduct(Product product){
         if (productRepository.exists(product.getId())){
-            System.out.println("Товар с id " + product.getId() + " уже существует");
+            log.warn("Товар с id {} уже существует", product.getId());
         } else {
             productRepository.add(product);
-            System.out.println("Товар " + product.getName() + " добавлен на склад");
+            log.info("Товар {} добавлен на склад", product.getName());
         }
     }
 
@@ -38,32 +41,32 @@ public class WarehouseService {
     public void createOrder(String orderId, String productId, int quantity){
         Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isEmpty()) {
-            System.out.println("Товар не найден");
+            log.warn("Товар с id {} не найден", productId);
             return;
         }
         Product product = productOpt.get();
 
         if (product.getQuantity() < quantity) {
-            System.out.println("Недостаточно товара на складе. Доступно: " + product.getQuantity());
+            log.warn("Недостаточно товара на складе. Доступно: {}", product.getQuantity());
             return;
         }
 
         Order order = new Order(orderId, productId, quantity);
         orderRepository.add(order);
-        System.out.println("Заказ " + orderId + " создан на товар " + product.getName());
+        log.info("Заказ {} создан на товар {}", orderId, product.getName());
     }
 
     public void processNextOrder(){
         Optional<Robot> robotOpt = robotRepository.findAvailable();
         if (robotOpt.isEmpty()) {
-            System.out.println("Нет свободных роботов");
+            log.warn("Нет свободных роботов");
             return;
         }
         Robot robot = robotOpt.get();
         List<Order> newOrders = orderRepository.findByStatus(OrderStatus.NEW);
 
         if (newOrders.isEmpty()) {
-            System.out.println("Нет новых заказов");
+            log.warn("Нет новых заказов");
             return;
         }
 
@@ -71,19 +74,19 @@ public class WarehouseService {
 
         robotRepository.assignOrder(robot.getId(), order.getId());
         orderRepository.updateStatus(order.getId(), OrderStatus.PROCESSING);
-        System.out.println("Робот " + robot.getName() + " взял в работу заказ " + order.getId());
+        log.info("Робот {} взял в работу заказ {}", robot.getName(), order.getId());
     }
 
     public void completeOrder(String orderId){
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
-            System.out.println("Заказ не найден");
+            log.warn("Заказ с id {} не найден", orderId);
             return;
         }
         Order order = orderOpt.get();
 
         if (order.getStatus() != OrderStatus.PROCESSING) {
-            System.out.println("Заказ не находится в обработке");
+            log.warn("Заказ {} не находится в обработке", orderId);
             return;
         }
 
@@ -104,7 +107,7 @@ public class WarehouseService {
                 break;
             }
         }
-        System.out.println("Заказ " + orderId + " выполнен. Товар " + product.getName() + ", остаток: " + newQuantity);
+        log.info("Заказ {} выполнен. Товар {}, остаток: {}", orderId, product.getName(), newQuantity);
     }
 
     public List<Order> getAllOrders() {
