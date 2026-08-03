@@ -22,7 +22,7 @@ public class WarehouseService {
         this.robotRepository = robotRepository;
     }
 
-    void addProduct(Product product){
+    public void addProduct(Product product){
         if (productRepository.exists(product.getId())){
             System.out.println("Товар с id " + product.getId() + " уже существует");
         } else {
@@ -31,11 +31,11 @@ public class WarehouseService {
         }
     }
 
-    List<Product> getAllProducts(){
+    public List<Product> getAllProducts(){
         return productRepository.findAll();
     }
 
-    void createOrder(String orderId, String productId, int quantity){
+    public void createOrder(String orderId, String productId, int quantity){
         Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isEmpty()) {
             System.out.println("Товар не найден");
@@ -53,7 +53,7 @@ public class WarehouseService {
         System.out.println("Заказ " + orderId + " создан на товар " + product.getName());
     }
 
-    void processNextOrder(){
+    public void processNextOrder(){
         Optional<Robot> robotOpt = robotRepository.findAvailable();
         if (robotOpt.isEmpty()) {
             System.out.println("Нет свободных роботов");
@@ -74,7 +74,7 @@ public class WarehouseService {
         System.out.println("Робот " + robot.getName() + " взял в работу заказ " + order.getId());
     }
 
-    void completeOrder(String orderId){
+    public void completeOrder(String orderId){
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
             System.out.println("Заказ не найден");
@@ -105,5 +105,13 @@ public class WarehouseService {
             }
         }
         System.out.println("Заказ " + orderId + " выполнен. Товар " + product.getName() + ", остаток: " + newQuantity);
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public List<Robot> getAllRobots() {
+        return robotRepository.findAll();
     }
 }
