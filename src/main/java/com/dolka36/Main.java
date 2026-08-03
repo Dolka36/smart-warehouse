@@ -1,5 +1,6 @@
 package com.dolka36;
 
+import com.dolka36.exception.WarehouseException;
 import com.dolka36.model.Order;
 import com.dolka36.model.Product;
 import com.dolka36.model.Robot;
@@ -18,6 +19,7 @@ import java.util.Scanner;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         InMemoryOrderRepository orderRepository = new InMemoryOrderRepository();
         InMemoryProductRepository productRepository = new InMemoryProductRepository();
@@ -72,7 +74,11 @@ public class Main {
                     scanner.nextLine(); // поглотить Enter
 
                     Product newProduct = new Product(id, name, category, price, quantity);
-                    warehouseService.addProduct(newProduct);
+                    try {
+                        warehouseService.addProduct(newProduct);
+                    } catch (WarehouseException e) {
+                        log.error(e.getMessage());
+                    }
                     break;
                 case 3:
                     System.out.print("Введите id заказа: ");
@@ -83,15 +89,29 @@ public class Main {
                     int qty = scanner.nextInt();
                     scanner.nextLine();
 
-                    warehouseService.createOrder(orderId, productId, qty);
+                    try {
+                        warehouseService.createOrder(orderId, productId, qty);
+                    } catch (WarehouseException e) {
+                        log.error(e.getMessage());
+                    }
                     break;
                 case 4:
-                    warehouseService.processNextOrder();
+                    try {
+                        warehouseService.processNextOrder();
+                    } catch (WarehouseException e) {
+                        log.error(e.getMessage());
+                    }
                     break;
                 case 5:
                     System.out.print("Введите id заказа для завершения: ");
                     String completeOrderId = scanner.nextLine();
-                    warehouseService.completeOrder(completeOrderId);
+                    try {
+                        warehouseService.completeOrder(completeOrderId);
+                    } catch (WarehouseException e) {
+                        log.error(e.getMessage());
+                    } catch (IllegalStateException e) {
+                        log.error(e.getMessage());
+                    }
                     break;
                 case 6:
                     List<Order> orders = warehouseService.getAllOrders();

@@ -1,5 +1,6 @@
 package com.dolka36.service;
 
+import com.dolka36.exception.*;
 import com.dolka36.model.Order;
 import com.dolka36.model.OrderStatus;
 import com.dolka36.model.Product;
@@ -25,30 +26,27 @@ public class WarehouseService {
         this.robotRepository = robotRepository;
     }
 
-    public void addProduct(Product product){
+    public void addProduct(Product product) throws ProductAlreadyExistsException {
         if (productRepository.exists(product.getId())){
-            log.warn("Товар с id {} уже существует", product.getId());
-        } else {
+            throw new ProductAlreadyExistsException(product.getId());
+        }
             productRepository.add(product);
             log.info("Товар {} добавлен на склад", product.getName());
-        }
     }
 
     public List<Product> getAllProducts(){
         return productRepository.findAll();
     }
 
-    public void createOrder(String orderId, String productId, int quantity){
+    public void createOrder(String orderId, String productId, int quantity) throws ProductNotFoundException, InsufficientStockException {
         Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isEmpty()) {
-            log.warn("Товар с id {} не найден", productId);
-            return;
+            throw new ProductNotFoundException(productId);
         }
         Product product = productOpt.get();
 
         if (product.getQuantity() < quantity) {
-            log.warn("Недостаточно товара на складе. Доступно: {}", product.getQuantity());
-            return;
+            throw new InsufficientStockException(productId, quantity, product.getQuantity());
         }
 
         Order order = new Order(orderId, productId, quantity);
@@ -56,18 +54,16 @@ public class WarehouseService {
         log.info("Заказ {} создан на товар {}", orderId, product.getName());
     }
 
-    public void processNextOrder(){
+    public void processNextOrder() throws NoAvailableRobotsException, NoNewOrdersException {
         Optional<Robot> robotOpt = robotRepository.findAvailable();
         if (robotOpt.isEmpty()) {
-            log.warn("Нет свободных роботов");
-            return;
+            throw new NoAvailableRobotsException();
         }
         Robot robot = robotOpt.get();
         List<Order> newOrders = orderRepository.findByStatus(OrderStatus.NEW);
 
         if (newOrders.isEmpty()) {
-            log.warn("Нет новых заказов");
-            return;
+            throw new NoNewOrdersException();
         }
 
         Order order = newOrders.get(0);
@@ -77,17 +73,15 @@ public class WarehouseService {
         log.info("Робот {} взял в работу заказ {}", robot.getName(), order.getId());
     }
 
-    public void completeOrder(String orderId){
+    public void completeOrder(String orderId) throws OrderNotFoundException, ProductNotFoundException {
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
-            log.warn("Заказ с id {} не найден", orderId);
-            return;
+            throw new OrderNotFoundException(orderId);
         }
         Order order = orderOpt.get();
 
         if (order.getStatus() != OrderStatus.PROCESSING) {
-            log.warn("Заказ {} не находится в обработке", orderId);
-            return;
+            throw new IllegalStateException("Заказ " + orderId + " не находится в обработке");
         }
 
         Optional<Product> productOpt = productRepository.findById(order.getProductId());
