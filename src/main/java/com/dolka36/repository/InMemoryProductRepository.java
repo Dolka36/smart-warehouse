@@ -3,10 +3,11 @@ package com.dolka36.repository;
 import com.dolka36.model.Product;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class InMemoryProductRepository implements  ProductRepository{
-    private final Map<String, Product> storage = new HashMap<>();
+    private final Map<String, Product> storage = new ConcurrentHashMap<>();
 
 
     @Override

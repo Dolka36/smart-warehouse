@@ -7,6 +7,7 @@ import com.dolka36.model.Robot;
 import com.dolka36.repository.InMemoryOrderRepository;
 import com.dolka36.repository.InMemoryProductRepository;
 import com.dolka36.repository.InMemoryRobotRepository;
+import com.dolka36.service.RobotWorker;
 import com.dolka36.service.WarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ import java.util.Scanner;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
+    private static final List<Thread> robotThreads = new ArrayList<>();
+    private static final List<RobotWorker> robotWorkers = new ArrayList<>();
 
     public static void main(String[] args) {
         InMemoryOrderRepository orderRepository = new InMemoryOrderRepository();
@@ -27,10 +30,16 @@ public class Main {
 
         WarehouseService warehouseService = new WarehouseService(productRepository, orderRepository, robotRepository);
 
-        // Добавляем тестовых роботов при старте
         robotRepository.add(new Robot("ROB-001", "Робот-погрузчик Альфа"));
         robotRepository.add(new Robot("ROB-002", "Робот-погрузчик Бета"));
         log.info("Система склада запущена. Роботы готовы к работе.");
+
+        List<Robot> allRobots = warehouseService.getAllRobots();
+        for (Robot robot : allRobots) {
+            RobotWorker worker = new RobotWorker(robot, warehouseService);
+            robotWorkers.add(worker);
+        }
+        log.info("Создано {} роботов-исполнителей", robotWorkers.size());
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -42,9 +51,11 @@ public class Main {
             System.out.println("5. Завершить заказ");
             System.out.println("6. Показать все заказы");
             System.out.println("7. Показать всех роботов");
-            System.out.println("8. Общая стоимость товаров");
-            System.out.println("9. Товары с низким остатком");
-            System.out.println("10. Товары по категории (сорт. по цене)");
+            System.out.println("8. Запустить многопоточную обработку");
+            System.out.println("9. Остановить всех роботов");
+            System.out.println("10. Общая стоимость товаров");
+            System.out.println("11. Товары с низким остатком");
+            System.out.println("12. Товары по категории (сорт. по цене)");
             System.out.println("0. Выход");
             System.out.print("Выберите действие: ");
 
@@ -74,7 +85,7 @@ public class Main {
                     double price = scanner.nextDouble();
                     System.out.print("Введите количество: ");
                     int quantity = scanner.nextInt();
-                    scanner.nextLine(); // поглотить Enter
+                    scanner.nextLine();
 
                     Product newProduct = new Product(id, name, category, price, quantity);
                     try {
@@ -139,11 +150,35 @@ public class Main {
                     }
                     break;
                 case 8:
+                    robotThreads.clear();
+                    for (RobotWorker worker : robotWorkers) {
+                        Thread thread = new Thread(worker, worker.getRobotName()); // нужен геттер!
+                        robotThreads.add(thread);
+                        thread.start();
+                    }
+                    log.info("Запущено {} потоков-роботов", robotThreads.size());
+                    break;
+
+                case 9:
+                    for (RobotWorker worker : robotWorkers) {
+                        worker.stop();
+                    }
+                    for (Thread thread : robotThreads) {
+                        try {
+                            thread.join(5000); // ждём завершения потока до 5 секунд
+                        } catch (InterruptedException e) {
+                            log.warn("Прервано ожидание завершения потока");
+                        }
+                    }
+                    robotThreads.clear();
+                    log.info("Все роботы остановлены");
+                    break;
+                case 10:
                     double totalValue = warehouseService.getTotalStockValue();
                     System.out.printf("Общая стоимость товаров на складе: %.2f%n", totalValue);
                     break;
 
-                case 9:
+                case 11:
                     System.out.print("Введите порог остатка: ");
                     int threshold = scanner.nextInt();
                     scanner.nextLine();
@@ -156,7 +191,7 @@ public class Main {
                     }
                     break;
 
-                case 10:
+                case 12:
                     System.out.print("Введите категорию: ");
                     String cat = scanner.nextLine();
                     List<Product> byCategory = warehouseService.getProductsByCategorySortedByPrice(cat);

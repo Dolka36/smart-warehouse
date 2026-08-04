@@ -5,10 +5,11 @@ import com.dolka36.model.OrderStatus;
 import com.dolka36.model.Product;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class InMemoryOrderRepository implements  OrderRepository{
-    private final Map<String, Order> storage = new HashMap<>();
+    private final Map<String, Order> storage = new ConcurrentHashMap<>();
 
     @Override
     public void add(Order order) {

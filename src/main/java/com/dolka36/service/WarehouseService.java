@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
+
 public class WarehouseService {
     private static final Logger log = LoggerFactory.getLogger(WarehouseService.class);
     private final ProductRepository productRepository;
@@ -125,6 +126,46 @@ public class WarehouseService {
                 .filter(p -> p.getCategory().equals(category))
                 .sorted(Comparator.comparingDouble(Product::getPrice))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Order> tryTakeOrder(String robotId) {
+        synchronized (this) {
+            List<Order> newOrders = orderRepository.findByStatus(OrderStatus.NEW);
+            if (newOrders.isEmpty()) {
+                return Optional.empty();
+            }
+            Order order = newOrders.get(0);
+            orderRepository.updateStatus(order.getId(), OrderStatus.PROCESSING);
+            robotRepository.assignOrder(robotId, order.getId());
+            log.info("{} взял в работу заказ {}", robotId, order.getId());
+            return Optional.of(order);
+        }
+    }
+
+    public void finishOrder(String robotId) {
+        synchronized (this) {
+            Optional<Robot> robotOpt = robotRepository.findById(robotId);
+            if (robotOpt.isEmpty()) {
+                log.warn("Робот {} не найден", robotId);
+                return;
+            }
+            Robot robot = robotOpt.get();
+            String orderId = robot.getCurrentOrderId();
+
+            if (orderId == null) {
+                return;
+            }
+
+            Order order = orderRepository.findById(orderId).get();
+            Product product = productRepository.findById(order.getProductId()).get();
+
+            int newQuantity = product.getQuantity() - order.getQuantity();
+            productRepository.updateQuantity(product.getId(), newQuantity);
+            orderRepository.updateStatus(orderId, OrderStatus.COMPLETED);
+            robotRepository.releaseRobot(robotId);
+
+            log.info("{} выполнил заказ {}. Товар {}, остаток: {}", robot.getName(), orderId, product.getName(), newQuantity);
+        }
     }
 
     public List<Order> getAllOrders() {

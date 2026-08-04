@@ -7,3 +7,20 @@
 2026-08-04 13:54:39.561 [main] INFO  c.dolka36.service.WarehouseService - Товар Ноутбук добавлен на склад
 2026-08-04 13:54:59.226 [main] INFO  c.dolka36.service.WarehouseService - Товар Клавиатура добавлен на склад
 2026-08-04 13:55:16.389 [main] INFO  c.dolka36.service.WarehouseService - Товар Печенье добавлен на склад
+2026-08-04 14:18:47.727 [main] INFO  com.dolka36.Main - Система склада запущена. Роботы готовы к работе.
+2026-08-04 14:18:47.728 [main] INFO  com.dolka36.Main - Создано 2 роботов-исполнителей
+2026-08-04 14:19:04.934 [main] INFO  c.dolka36.service.WarehouseService - Товар Ноутбук добавлен на склад
+2026-08-04 14:19:28.145 [main] INFO  c.dolka36.service.WarehouseService - Товар Клавиатура добавлен на склад
+2026-08-04 14:19:49.025 [main] INFO  c.dolka36.service.WarehouseService - Товар Печенька добавлен на склад
+2026-08-04 14:20:29.019 [main] INFO  c.dolka36.service.WarehouseService - Заказ CAS-001 создан на товар Ноутбук
+2026-08-04 14:20:43.348 [main] INFO  c.dolka36.service.WarehouseService - Заказ CAS-002 создан на товар Клавиатура
+2026-08-04 14:20:55.432 [main] INFO  c.dolka36.service.WarehouseService - Заказ CAS-003 создан на товар Ноутбук
+2026-08-04 14:21:04.116 [Робот-погрузчик Бета] INFO  com.dolka36.service.RobotWorker - Робот-погрузчик Бета запущен и готов к работе
+2026-08-04 14:21:04.116 [main] INFO  com.dolka36.Main - Запущено 2 потоков-роботов
+2026-08-04 14:21:04.116 [Робот-погрузчик Альфа] INFO  com.dolka36.service.RobotWorker - Робот-погрузчик Альфа запущен и готов к работе
+2026-08-04 14:21:04.120 [Робот-погрузчик Бета] INFO  c.dolka36.service.WarehouseService - ROB-002 взял в работу заказ CAS-003
+2026-08-04 14:21:04.120 [Робот-погрузчик Альфа] INFO  c.dolka36.service.WarehouseService - ROB-001 взял в работу заказ CAS-002
+2026-08-04 14:21:06.123 [Робот-погрузчик Альфа] INFO  c.dolka36.service.WarehouseService - Робот-погрузчик Альфа выполнил заказ CAS-002. Товар Клавиатура, остаток: 2
+2026-08-04 14:21:06.123 [Робот-погрузчик Альфа] INFO  c.dolka36.service.WarehouseService - ROB-001 взял в работу заказ CAS-001
+2026-08-04 14:21:06.123 [Робот-погрузчик Бета] INFO  c.dolka36.service.WarehouseService - Робот-погрузчик Бета выполнил заказ CAS-003. Товар Ноутбук, остаток: 8
+2026-08-04 14:21:08.129 [Робот-погрузчик Альфа] INFO  c.dolka36.service.WarehouseService - Робот-погрузчик Альфа выполнил заказ CAS-001. Товар Ноутбук, остаток: 7

@@ -5,10 +5,11 @@ import com.dolka36.model.Robot;
 import com.dolka36.model.RobotStatus;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class InMemoryRobotRepository implements RobotRepository{
-    private final Map<String, Robot> storage = new HashMap<>();
+    private final Map<String, Robot> storage = new ConcurrentHashMap<>();
 
     @Override
     public void add(Robot robot) {
