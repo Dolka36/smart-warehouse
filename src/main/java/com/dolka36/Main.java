@@ -42,6 +42,9 @@ public class Main {
             System.out.println("5. Завершить заказ");
             System.out.println("6. Показать все заказы");
             System.out.println("7. Показать всех роботов");
+            System.out.println("8. Общая стоимость товаров");
+            System.out.println("9. Товары с низким остатком");
+            System.out.println("10. Товары по категории (сорт. по цене)");
             System.out.println("0. Выход");
             System.out.print("Выберите действие: ");
 
@@ -133,6 +136,35 @@ public class Main {
                         for (Robot r : robots) {
                             System.out.println("  " + r);
                         }
+                    }
+                    break;
+                case 8:
+                    double totalValue = warehouseService.getTotalStockValue();
+                    System.out.printf("Общая стоимость товаров на складе: %.2f%n", totalValue);
+                    break;
+
+                case 9:
+                    System.out.print("Введите порог остатка: ");
+                    int threshold = scanner.nextInt();
+                    scanner.nextLine();
+                    List<Product> lowStock = warehouseService.getLowStockProducts(threshold);
+                    if (lowStock.isEmpty()) {
+                        log.info("Товаров с остатком ниже {} не найдено", threshold);
+                    } else {
+                        System.out.println("Товары с низким остатком:");
+                        lowStock.forEach(p -> System.out.println("  " + p));
+                    }
+                    break;
+
+                case 10:
+                    System.out.print("Введите категорию: ");
+                    String cat = scanner.nextLine();
+                    List<Product> byCategory = warehouseService.getProductsByCategorySortedByPrice(cat);
+                    if (byCategory.isEmpty()) {
+                        log.info("Товары категории '{}' не найдены", cat);
+                    } else {
+                        System.out.println("Товары категории '" + cat + "' (сорт. по цене):");
+                        byCategory.forEach(p -> System.out.println("  " + p));
                     }
                     break;
                 case 0:

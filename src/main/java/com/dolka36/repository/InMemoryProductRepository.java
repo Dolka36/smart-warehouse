@@ -3,6 +3,7 @@ package com.dolka36.repository;
 import com.dolka36.model.Product;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryProductRepository implements  ProductRepository{
     private final Map<String, Product> storage = new HashMap<>();
@@ -25,14 +26,11 @@ public class InMemoryProductRepository implements  ProductRepository{
 
     @Override
     public List<Product> findByCategory(String category) {
-        List<Product> result = new ArrayList<>();
-        for (Product product : storage.values()) {
-            if (product.getCategory().equals(category)){
-                result.add(product);
-            }
-        }
-        return result;
+        return storage.values().stream()
+                .filter(p -> p.getCategory().equals(category))
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public void updateQuantity(String id, int newQuantity) {

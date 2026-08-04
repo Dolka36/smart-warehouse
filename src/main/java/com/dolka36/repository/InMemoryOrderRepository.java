@@ -5,6 +5,7 @@ import com.dolka36.model.OrderStatus;
 import com.dolka36.model.Product;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryOrderRepository implements  OrderRepository{
     private final Map<String, Order> storage = new HashMap<>();
@@ -26,13 +27,9 @@ public class InMemoryOrderRepository implements  OrderRepository{
 
     @Override
     public List<Order> findByStatus(OrderStatus status) {
-        List<Order> result = new ArrayList<>();
-        for (Order order : storage.values()) {
-            if (order.getStatus().equals(status)){
-                result.add(order);
-            }
-        }
-        return result;
+        return storage.values().stream()
+                .filter(o -> o.getStatus() == status)
+                .collect(Collectors.toList());
     }
 
     @Override

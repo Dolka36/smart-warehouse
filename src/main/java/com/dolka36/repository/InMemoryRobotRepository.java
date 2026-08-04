@@ -5,6 +5,7 @@ import com.dolka36.model.Robot;
 import com.dolka36.model.RobotStatus;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryRobotRepository implements RobotRepository{
     private final Map<String, Robot> storage = new HashMap<>();
@@ -26,23 +27,17 @@ public class InMemoryRobotRepository implements RobotRepository{
 
     @Override
     public List<Robot> findByStatus(RobotStatus status) {
-        List<Robot> result = new ArrayList<>();
-        for (Robot robot : storage.values()) {
-            if (robot.getStatus() == status){
-                result.add(robot);
-            }
-        }
-        return result;
+        return storage.values().stream()
+                .filter(r -> r.getStatus() == status)
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public Optional<Robot> findAvailable() {
-        for (Robot robot : storage.values()) {
-            if (robot.getStatus() == RobotStatus.AVAILABLE) {
-                return Optional.of(robot);
-            }
-        }
-        return Optional.empty();
+        return storage.values().stream()
+                .filter(r -> r.getStatus() == RobotStatus.AVAILABLE)
+                .findFirst();
     }
 
     @Override

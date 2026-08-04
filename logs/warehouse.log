@@ -1,4 +1,9 @@
-2026-08-03 18:48:33.139 [main] INFO  c.dolka36.service.WarehouseService - Товар а добавлен на склад
-2026-08-03 18:48:36.568 [main] WARN  c.dolka36.service.WarehouseService - Нет новых заказов
-2026-08-03 18:48:40.316 [main] WARN  c.dolka36.service.WarehouseService - Заказ с id 1 не найден
-2026-08-03 18:52:09.378 [main] INFO  com.dolka36.Main - Система склада запущена. Роботы готовы к работе.
+2026-08-04 13:52:25.233 [main] INFO  com.dolka36.Main - Система склада запущена. Роботы готовы к работе.
+2026-08-04 13:52:39.191 [main] INFO  com.dolka36.Main - Товаров с остатком ниже 1 не найдено
+2026-08-04 13:52:49.145 [main] INFO  com.dolka36.Main - Товары категории 'af' не найдены
+2026-08-04 13:53:35.908 [main] INFO  c.dolka36.service.WarehouseService - Товар Ноутбук добавлен на склад
+2026-08-04 13:53:54.738 [main] INFO  c.dolka36.service.WarehouseService - Товар Клавиатура добавлен на склад
+2026-08-04 13:54:13.956 [main] INFO  com.dolka36.Main - Система склада запущена. Роботы готовы к работе.
+2026-08-04 13:54:39.561 [main] INFO  c.dolka36.service.WarehouseService - Товар Ноутбук добавлен на склад
+2026-08-04 13:54:59.226 [main] INFO  c.dolka36.service.WarehouseService - Товар Клавиатура добавлен на склад
+2026-08-04 13:55:16.389 [main] INFO  c.dolka36.service.WarehouseService - Товар Печенье добавлен на склад

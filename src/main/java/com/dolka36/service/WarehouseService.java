@@ -10,8 +10,11 @@ import com.dolka36.repository.ProductRepository;
 import com.dolka36.repository.RobotRepository;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 
 public class WarehouseService {
@@ -102,6 +105,26 @@ public class WarehouseService {
             }
         }
         log.info("Заказ {} выполнен. Товар {}, остаток: {}", orderId, product.getName(), newQuantity);
+    }
+
+    public double getTotalStockValue() {
+        return productRepository.findAll().stream()
+                .mapToDouble(p -> p.getPrice() * p.getQuantity())
+                .sum();
+    }
+
+    public List<Product> getLowStockProducts(int threshold){
+        return productRepository.findAll().stream()
+                .filter(p -> p.getQuantity() < threshold)
+                .sorted(Comparator.comparingInt(Product::getQuantity))
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> getProductsByCategorySortedByPrice(String category){
+        return productRepository.findAll().stream()
+                .filter(p -> p.getCategory().equals(category))
+                .sorted(Comparator.comparingDouble(Product::getPrice))
+                .collect(Collectors.toList());
     }
 
     public List<Order> getAllOrders() {
